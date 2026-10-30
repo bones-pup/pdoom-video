@@ -1,17 +1,18 @@
 import { hexToLinear } from './util';
 
-// The whole video lives in a restrained palette: ink, bone, and one signal colour.
-// One rare accent (acid, the shrooms moment) — see docs/TREATMENT.md.
+// F1 / High-Speed Motorsport Telemetry palette:
+// Carbon/asphalt darks, FIA Nomex/technical bone, incandescent brake/telemetry red,
+// titanium skid-spark ember, and one rare DRS / Fastest-Sector acid accent — see docs/TREATMENT.md.
 export const HEX = {
-  ink: '#0A0A0B', // background black (slightly warm)
-  ink2: '#151517', // raised black (panels, paper-in-the-dark)
-  graphite: '#5E5B57', // dim lines, secondary text
-  ash: '#9C978F', // mid grey
-  bone: '#EEE9DF', // paper white, primary text
-  signal: '#FF4D12', // hazard orange: the spark, the fuse, P(doom)
-  ember: '#FF8A3D', // hotter, lighter orange for cores/highlights
-  blood: '#C21D0B', // deep red-orange for shadows of signal
-  acid: '#D8FF3C', // acid: only for the shrooms moment
+  ink: '#08090B', // night asphalt / raw carbon background
+  ink2: '#121418', // raised telemetry panels & composite weave
+  graphite: '#565A61', // CAD grid hairlines, secondary channels
+  ash: '#9499A1', // machined aluminium annotations
+  bone: '#ECEAE4', // FIA technical paper, crisp primary type
+  signal: '#FF2A1A', // telemetry red: racing trace, brake glow, redline, sung word
+  ember: '#FF7A26', // white-hot titanium spark cores & exhaust heat
+  blood: '#9E1108', // deep rain-light crimson shadows
+  acid: '#C8FF2E', // rare Sector-Best / DRS Active flash (overtake scene only)
 } as const;
 
 export type PaletteKey = keyof typeof HEX;

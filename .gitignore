@@ -4,6 +4,8 @@ node_modules/
 
 # renders
 out/
+scratch/
+new bahan/
 
 # analysis: Python env, model weights, stems and intermediates (regenerable, large)
 analysis/.venv/

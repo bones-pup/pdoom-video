@@ -38,7 +38,7 @@ export class Lyrics {
 
   static async load(): Promise<Lyrics> {
     for (const url of ['data/lyrics.json', 'data/lyrics.approx.json']) {
-      const r = await fetch(url);
+      const r = await fetch(url + '?v=' + Date.now(), { cache: 'no-cache' });
       if (r.ok && (r.headers.get('content-type') ?? '').includes('json')) return new Lyrics(await r.json());
     }
     throw new Error('no lyrics data found');

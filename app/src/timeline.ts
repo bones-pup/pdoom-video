@@ -1,5 +1,5 @@
-// The edit: which scene plays when. Boundaries are anchored to lyric lines and snapped
-// to the beat grid, so they follow the aligned data (data/lyrics.json, data/audio.json).
+// The edit: which F1 telemetry plate plays when. Boundaries are anchored to lyric lines
+// in `data/lyrics.json` and snapped to the constant 110 BPM beat grid (`data/audio.json`).
 import type { TimelineEntry } from './engine/engine';
 import type { SceneClass } from './engine/scene';
 import type { Lyrics } from './engine/lyrics';
@@ -14,7 +14,7 @@ const scene = (name: string) => () => {
 
 export function makeTimeline(ly: Lyrics, au: AudioData): TimelineEntry[] {
   /** Cut on the last beat at/before the first word of the matching line (never after the word). */
-  const cut = (q: string, nth = 0, tol = 0.02) => {
+  const cut = (q: string, nth = 0, tol = 0.03) => {
     const s = ly.get(q, nth).words[0]!.start;
     return au.timeOfBeat(Math.floor(au.beatAt(s + tol)));
   };
@@ -25,28 +25,22 @@ export function makeTimeline(ly: Lyrics, au: AudioData): TimelineEntry[] {
   };
 
   const b = {
-    loss: cut('There was a sudden drop'),
-    pre1: cut('ChatGPT, please'),
-    hook1: cut("I'm upping", 0),
-    room: cut("'cause the future goes FOOM"),
-    shog: cut("See through the shoggoth"),
-    space: cut('We had a stable'),
-    pre2: cut('Sydney'),
-    hook2: cut("I'm upping", 1),
-    ascent: cut('I hear the basilisk'),
-    bureau: cut('That was safe enough'),
-    left: cut('Sharp left turn'),
-    pre3: cut('Gato'),
-    hook3: cut("I'm upping", 2),
-    clips: cut('as paperclips'),
-    fuse: cut('Too late now'),
-    stack: cut('transformers all the way'),
-    dense: cut('Post-Chinchilla', 0, 0.05), // 'Post' starts 32 ms before its beat; don't cut 'disobey' in half
-    hook4: cut("I'm upping", 3),
-    loom: cut('Just as foretold'),
-    ilya: cut('What did Ilya'),
-    // the outro section from the music analysis if present (the last word may be a long held note)
-    outro: au.sections.find((x) => x.name === 'outro')?.start ?? after('Was it all for show'),
+    redline: cut("I don't wanna lose my mind"),
+    krypto: cut('In my world'),
+    clutch1: cut('But I, but I wait'),
+    hook1: au.timeOfBeat(Math.round(au.beatAt(51.0))), // Retimed to downbeat/beat at ~51s (51.03s)
+    apex1: cut("No question if it's wrong or right", 0),
+    hook2: cut('But it feels so good', 0),
+    apex2: cut("No question if it's wrong or right", 1),
+    tunnel: after('no way to take it slow', 0),
+    dyno: cut('Bounce back when bottles'),
+    overtake: cut("Ain't finna pop"),
+    waveform: cut('Itch to pull trigger'),
+    hook3: au.nearestBeat(140.0), // Detik 140 (139.938s downbeat)
+    redzone1: cut("No question if it's wrong or right", 2),
+    hook4: cut('But it feels so good', 1),
+    redzone2: cut("No question if it's wrong or right", 3),
+    outro: au.sections.find((x) => x.name === 'outro')?.start ?? after('no way to take it slow', 1),
     end: au.duration,
   };
 
@@ -54,29 +48,22 @@ export function makeTimeline(ly: Lyrics, au: AudioData): TimelineEntry[] {
     ({ id, load: scene(file), start, end, ...extra });
 
   return [
-    E('open', 'open', 0, b.loss),
-    E('loss', 'loss', b.loss, b.pre1),
-    E('prompt1', 'prompt', b.pre1, b.hook1, { params: { variant: 'chatgpt' } }),
-    E('hook1', 'hook', b.hook1, b.room, { params: { n: 1 } }),
-    E('room', 'room', b.room, b.shog),
-    // (its half-res G-buffer sparkles along the silhouettes from one sub-frame to the next: noise the adaptive
-    // sampler would chase to 324 sub-frames, though 108 already can't be told from 324)
-    E('shoggoth', 'shoggoth', b.shog, b.space, { maxSamples: 108 }),
-    E('spacetime', 'spacetime', b.space, b.pre2),
-    E('prompt2', 'prompt', b.pre2, b.hook2, { params: { variant: 'sydney' } }),
-    E('hook2', 'hook', b.hook2, b.ascent, { params: { n: 2 } }),
-    E('ascent', 'ascent', b.ascent, b.bureau),
-    E('bureau', 'bureau', b.bureau, b.left),
-    E('leftturn', 'leftturn', b.left, b.pre3),
-    E('prompt3', 'prompt', b.pre3, b.hook3, { params: { variant: 'gato' } }),
-    E('hook3', 'hook', b.hook3, b.clips, { params: { n: 3 } }),
-    E('paperclips', 'paperclips', b.clips, b.fuse),
-    E('fuse', 'fuse', b.fuse, b.stack),
-    E('stack', 'stack', b.stack, b.dense),
-    E('dense', 'dense', b.dense, b.hook4),
-    E('hook4', 'hook', b.hook4, b.loom, { params: { n: 4 } }),
-    E('loom', 'loom', b.loom, b.ilya),
-    E('ilya', 'ilya', b.ilya, b.outro),
+    E('lights', 'lights', 0, b.redline),
+    E('redline', 'redline', b.redline, b.krypto),
+    E('kryptonite', 'kryptonite', b.krypto, b.clutch1),
+    E('clutch1', 'clutch', b.clutch1, b.hook1, { params: { variant: 'launch' } }),
+    E('hook1', 'hook', b.hook1, b.apex1, { params: { n: 1 } }),
+    E('apex', 'apex', b.apex1, b.hook2),
+    E('hook2', 'hook', b.hook2, b.apex2, { params: { n: 2 } }),
+    E('apex2', 'apex', b.apex2, b.tunnel),
+    E('tunnel', 'tunnel', b.tunnel, b.dyno),
+    E('dyno', 'dyno', b.dyno, b.overtake),
+    E('overtake', 'overtake', b.overtake, b.waveform),
+    E('waveform', 'waveform', b.waveform, b.hook3),
+    E('hook3', 'hook', b.hook3, b.redzone1, { params: { n: 3 } }),
+    E('redzone', 'redzone', b.redzone1, b.hook4),
+    E('hook4', 'hook', b.hook4, b.redzone2, { params: { n: 4 } }),
+    E('redzone2', 'redzone', b.redzone2, b.outro),
     E('outro', 'outro', b.outro, b.end),
   ];
 }
